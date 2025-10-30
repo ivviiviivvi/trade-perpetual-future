@@ -23,6 +23,8 @@ function TradePanel() {
   ]
 
   // Initialize Drift Client when wallet connects
+  // Note: driftClient is intentionally excluded from deps to prevent re-initialization loop
+  // This effect should only run when wallet connection changes
   useEffect(() => {
     if (publicKey && connection && signTransaction && signAllTransactions && !driftClient) {
       initializeDrift()
