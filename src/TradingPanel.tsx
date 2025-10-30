@@ -37,7 +37,7 @@ export default function TradingPanel() {
         },
         env: 'devnet',
         // Add builder code for fee collection
-        // @ts-expect-error - builder code may not be in types yet
+        // @ts-expect-error - builderCode property may not exist in DriftClient constructor options types
         builderCode: DRIFT_BUILDER_CODE,
       })
 
@@ -45,7 +45,7 @@ export default function TradingPanel() {
 
       // Get SOL-PERP market (market index 0 is typically SOL-PERP on Drift)
       const marketIndex = 0
-      const baseAssetAmount = parseFloat(amount) * 1e9 // Convert to lamports
+      const baseAssetAmount = parseFloat(amount) * 1_000_000_000 // Convert to lamports (SOL has 9 decimals)
       const leverageAmount = parseFloat(leverage)
 
       // Place a market order using the helper function
