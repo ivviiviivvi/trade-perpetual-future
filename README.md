@@ -1,73 +1,77 @@
-# React + TypeScript + Vite
+# Bang Perp Exchange
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Bang Perp Exchange - A meme-style Solana perpetual trading site. Users connect wallets (Phantom/Solflare) and trade perps via Drift Protocol. Non-custodial architecture with Builder Code revenue. Built with React + Vite + TypeScript.
 
-Currently, two official plugins are available:
+![Bang Perp Exchange](https://github.com/user-attachments/assets/cea3bbaa-2386-4d2e-b04f-1f0074b56b1e)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- 🚀 **Solana Perpetual Futures Trading** - Powered by Drift Protocol
+- 👛 **Multi-Wallet Support** - Phantom and Solflare wallets
+- 💰 **Non-Custodial** - You control your keys and sign your own transactions
+- 🎨 **Meme-Style UI** - Black and gold theme with Tailwind CSS
+- 🔧 **Modern Stack** - React 19 + Vite 7 + TypeScript
+- 🧪 **Devnet Ready** - Connected to Solana Devnet for testing
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js 18+ and npm
+- A Solana wallet (Phantom or Solflare browser extension)
+- Some SOL on Devnet (get from [Solana Faucet](https://faucet.solana.com/))
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# Install dependencies
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The app will be available at `http://localhost:5173` (or another port if 5173 is in use).
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Tech Stack
+
+- **Frontend**: React 19 with TypeScript
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS v4
+- **Blockchain**: Solana (Devnet)
+- **Wallet Integration**: @solana/wallet-adapter
+- **Trading Protocol**: Drift Protocol (@drift-labs/sdk-browser)
+
+## Architecture
+
+- **Non-Custodial**: All transactions are signed by the user's wallet
+- **Devnet**: Currently configured for Solana Devnet
+- **Builder Code**: Includes Drift Builder Code "BANGPERP" for fee collection
+
+## Usage
+
+1. Click "Select Wallet" to connect your Phantom or Solflare wallet
+2. Ensure you're connected to Solana Devnet
+3. Enter the amount of SOL you want to trade
+4. Set your desired leverage (1-10x)
+5. Click "LONG" to go long or "SHORT" to go short
+6. Confirm the transaction in your wallet
+
+## Deployment
+
+This project can be deployed to:
+- **GitHub Pages**: Use `npm run build` and deploy the `dist` folder
+- **Vercel**: Connect your repository for automatic deployments
+- **Netlify**: Drag and drop the `dist` folder or connect your repository
+
+## License
+
+MIT
