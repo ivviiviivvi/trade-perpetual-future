@@ -9,6 +9,8 @@ import { PriceChart } from '@/components/PriceChart'
 import { GamesTab } from '@/components/GamesTab'
 import { AffiliateTab } from '@/components/AffiliateTab'
 import { LeaderboardTab } from '@/components/LeaderboardTab'
+import { CursorParticles } from '@/components/CursorParticles'
+import { GlassTooltip } from '@/components/GlassTooltip'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -18,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Wallet, ChartLine, TrendUp, DiceThree, ShareNetwork, Trophy, SignOut } from '@phosphor-icons/react'
 import { useLivePrices } from '@/hooks/use-live-prices'
+import { useMarketBackground } from '@/hooks/use-market-background'
 import { generateReferralCode, getUserTier, calculateCommission } from '@/lib/affiliate'
 import { rollDice, flipCoin, generateSeed, calculateGamePayout } from '@/lib/game-logic'
 import type { Market, Position, ClosedPosition, User, UserProfile, Game, AffiliateStats, LeaderboardEntry } from '@/lib/types'
@@ -79,6 +82,7 @@ function App() {
 
   const markets = useLivePrices(INITIAL_MARKETS)
   const selectedMarket = markets.find((m) => m.id === selectedMarketId) || markets[0]
+  const bgGradient = useMarketBackground(markets)
 
   const currentBalance = balance ?? INITIAL_BALANCE
   const currentPositions = positions ?? []
@@ -431,7 +435,15 @@ function App() {
   const userTier = getUserTier(currentUserProfile)
 
   return (
-    <div className="min-h-screen text-foreground relative overflow-hidden">
+    <div 
+      className="min-h-screen text-foreground relative overflow-hidden transition-all duration-1000"
+      style={{ 
+        background: `linear-gradient(${bgGradient})`,
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <CursorParticles />
+      
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
@@ -454,25 +466,51 @@ function App() {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="glass-strong rounded-2xl p-4 glass-hover">
-                <div className="flex items-center gap-3">
-                  <Wallet size={22} className="text-primary" />
-                  <div>
-                    <div className="text-xs text-muted-foreground">Balance</div>
-                    <div className="font-mono font-bold text-lg">${currentBalance.toFixed(2)}</div>
+              <GlassTooltip 
+                content={
+                  <div className="space-y-1">
+                    <div className="font-semibold text-xs">Available Balance</div>
+                    <div className="text-xs text-foreground/70">For trading & games</div>
+                  </div>
+                }
+                side="bottom"
+              >
+                <div className="glass-strong rounded-2xl p-4 glass-hover">
+                  <div className="flex items-center gap-3">
+                    <Wallet size={22} className="text-primary" />
+                    <div>
+                      <div className="text-xs text-muted-foreground">Balance</div>
+                      <div className="font-mono font-bold text-lg">${currentBalance.toFixed(2)}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </GlassTooltip>
 
-              <div className="glass-strong rounded-2xl p-4 glass-hover">
-                <div className="flex items-center gap-3">
-                  <ChartLine size={22} className="text-accent" />
-                  <div>
-                    <div className="text-xs text-muted-foreground">Portfolio</div>
-                    <div className="font-mono font-bold text-lg">${totalValue.toFixed(2)}</div>
+              <GlassTooltip 
+                content={
+                  <div className="space-y-2">
+                    <div className="font-semibold text-xs">Total Portfolio Value</div>
+                    <div className="text-xs space-y-1">
+                      <div>Balance: ${currentBalance.toFixed(2)}</div>
+                      <div>Positions: ${currentPositions.reduce((sum, pos) => sum + pos.size, 0).toFixed(2)}</div>
+                      <div>Unrealized P&L: <span className={totalUnrealizedPnl >= 0 ? 'text-long' : 'text-short'}>
+                        {totalUnrealizedPnl >= 0 ? '+' : ''}${totalUnrealizedPnl.toFixed(2)}
+                      </span></div>
+                    </div>
+                  </div>
+                }
+                side="bottom"
+              >
+                <div className="glass-strong rounded-2xl p-4 glass-hover">
+                  <div className="flex items-center gap-3">
+                    <ChartLine size={22} className="text-accent" />
+                    <div>
+                      <div className="text-xs text-muted-foreground">Portfolio</div>
+                      <div className="font-mono font-bold text-lg">${totalValue.toFixed(2)}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </GlassTooltip>
 
               <div className="flex items-center gap-3 glass-strong rounded-2xl px-4 py-2">
                 <Avatar className="h-10 w-10 ring-2 ring-primary/50">

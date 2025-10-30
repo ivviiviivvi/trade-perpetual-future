@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card'
+import { GlassTooltip } from '@/components/GlassTooltip'
 import type { Market } from '@/lib/types'
 import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip } from 'recharts'
 import { cn } from '@/lib/utils'
@@ -29,17 +30,42 @@ export function PriceChart({ market, isSelected, onClick }: PriceChartProps) {
       <div className="mb-3">
         <h3 className="font-semibold text-sm text-foreground/70 mb-1">{market.symbol}</h3>
         <div className="flex items-baseline gap-3">
-          <div className="font-mono text-3xl font-bold">
-            ${market.currentPrice.toFixed(2)}
-          </div>
-          <div className={`text-sm font-mono font-semibold px-2 py-1 rounded-lg ${isPositive ? 'text-long bg-long/20' : 'text-short bg-short/20'}`}>
-            {isPositive ? '+' : ''}{market.change24h.toFixed(2)}%
-          </div>
+          <GlassTooltip 
+            content={
+              <div className="space-y-1">
+                <div className="text-xs font-semibold">Live Price</div>
+                <div className="text-xs text-foreground/70">
+                  Updated every 2 seconds
+                </div>
+              </div>
+            }
+          >
+            <div className="font-mono text-3xl font-bold cursor-help">
+              ${market.currentPrice.toFixed(2)}
+            </div>
+          </GlassTooltip>
+          <GlassTooltip 
+            content={
+              <div className="text-xs">
+                24h price change
+              </div>
+            }
+          >
+            <div className={`text-sm font-mono font-semibold px-2 py-1 rounded-lg cursor-help ${isPositive ? 'text-long bg-long/20' : 'text-short bg-short/20'}`}>
+              {isPositive ? '+' : ''}{market.change24h.toFixed(2)}%
+            </div>
+          </GlassTooltip>
         </div>
         <div className="flex gap-4 text-xs text-foreground/60 mt-2">
-          <span>H: ${market.high24h.toFixed(2)}</span>
-          <span>L: ${market.low24h.toFixed(2)}</span>
-          <span>Vol: {market.volume24h}</span>
+          <GlassTooltip content={<div className="text-xs">24h High</div>}>
+            <span className="cursor-help">H: ${market.high24h.toFixed(2)}</span>
+          </GlassTooltip>
+          <GlassTooltip content={<div className="text-xs">24h Low</div>}>
+            <span className="cursor-help">L: ${market.low24h.toFixed(2)}</span>
+          </GlassTooltip>
+          <GlassTooltip content={<div className="text-xs">24h Volume</div>}>
+            <span className="cursor-help">Vol: {market.volume24h}</span>
+          </GlassTooltip>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={120}>

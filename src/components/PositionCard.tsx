@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { X, TrendUp, TrendDown, Lightning } from '@phosphor-icons/react'
+import { GlassTooltip } from '@/components/GlassTooltip'
 import type { Position } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -45,24 +46,65 @@ export function PositionCard({ position, onClose }: PositionCardProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 text-sm mb-3">
-        <div>
-          <div className="text-foreground/60 text-xs mb-1">Size</div>
-          <div className="font-mono font-semibold">${position.size.toFixed(2)}</div>
-        </div>
-        <div>
-          <div className="text-foreground/60 text-xs mb-1">Entry Price</div>
-          <div className="font-mono font-semibold">${position.entryPrice.toFixed(2)}</div>
-        </div>
-        <div>
-          <div className="text-foreground/60 text-xs mb-1">Current Price</div>
-          <div className="font-mono font-semibold">${position.currentPrice.toFixed(2)}</div>
-        </div>
-        <div>
-          <div className="text-foreground/60 text-xs mb-1">Liq. Price</div>
-          <div className="font-mono text-destructive text-xs font-semibold">
-            ${position.liquidationPrice.toFixed(2)}
+        <GlassTooltip 
+          content={
+            <div className="text-xs">
+              Your collateral amount
+            </div>
+          }
+        >
+          <div className="cursor-help">
+            <div className="text-foreground/60 text-xs mb-1">Size</div>
+            <div className="font-mono font-semibold">${position.size.toFixed(2)}</div>
           </div>
-        </div>
+        </GlassTooltip>
+        <GlassTooltip 
+          content={
+            <div className="text-xs">
+              Price when position was opened
+            </div>
+          }
+        >
+          <div className="cursor-help">
+            <div className="text-foreground/60 text-xs mb-1">Entry Price</div>
+            <div className="font-mono font-semibold">${position.entryPrice.toFixed(2)}</div>
+          </div>
+        </GlassTooltip>
+        <GlassTooltip 
+          content={
+            <div className="text-xs space-y-1">
+              <div>Live market price</div>
+              <div className={position.currentPrice > position.entryPrice ? 'text-long' : 'text-short'}>
+                {position.currentPrice > position.entryPrice ? '↑' : '↓'} 
+                {' '}
+                {Math.abs(((position.currentPrice - position.entryPrice) / position.entryPrice) * 100).toFixed(2)}%
+              </div>
+            </div>
+          }
+        >
+          <div className="cursor-help">
+            <div className="text-foreground/60 text-xs mb-1">Current Price</div>
+            <div className="font-mono font-semibold">${position.currentPrice.toFixed(2)}</div>
+          </div>
+        </GlassTooltip>
+        <GlassTooltip 
+          content={
+            <div className="text-xs space-y-1">
+              <div className="font-semibold">Liquidation Price</div>
+              <div className="text-destructive">Position closes at this price</div>
+              <div className="text-foreground/70">
+                {Math.abs(((position.liquidationPrice - position.currentPrice) / position.currentPrice) * 100).toFixed(1)}% away
+              </div>
+            </div>
+          }
+        >
+          <div className="cursor-help">
+            <div className="text-foreground/60 text-xs mb-1">Liq. Price</div>
+            <div className="font-mono text-destructive text-xs font-semibold">
+              ${position.liquidationPrice.toFixed(2)}
+            </div>
+          </div>
+        </GlassTooltip>
       </div>
 
       <div

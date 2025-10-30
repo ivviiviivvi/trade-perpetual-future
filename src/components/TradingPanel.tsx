@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
 import { TrendUp, TrendDown, Lightning } from '@phosphor-icons/react'
+import { GlassTooltip } from '@/components/GlassTooltip'
 import type { Market } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -105,7 +106,22 @@ export function TradingPanel({ market, balance, onTrade }: TradingPanelProps) {
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <Label className="text-sm">Leverage</Label>
+            <GlassTooltip 
+              content={
+                <div className="space-y-1">
+                  <div className="font-semibold text-xs">Leverage Multiplier</div>
+                  <div className="text-xs text-foreground/70">
+                    Your position size will be {leverageNum}x your collateral
+                  </div>
+                  <div className="text-xs text-destructive/80 mt-1">
+                    ⚠️ Higher leverage = Higher risk
+                  </div>
+                </div>
+              }
+              side="top"
+            >
+              <Label className="text-sm cursor-help">Leverage</Label>
+            </GlassTooltip>
             <Badge variant="secondary" className="gap-1 font-mono glass">
               <Lightning weight="fill" size={14} />
               {leverageNum}x
@@ -127,20 +143,47 @@ export function TradingPanel({ market, balance, onTrade }: TradingPanelProps) {
       </div>
 
       <div className="glass rounded-2xl p-4 space-y-2 mb-6 text-sm border border-white/10">
-        <div className="flex justify-between">
-          <span className="text-foreground/70">Position Value</span>
-          <span className="font-mono font-semibold">${positionValue.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-foreground/70">Collateral</span>
-          <span className="font-mono font-semibold">${sizeNum.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-foreground/70">Est. Liquidation</span>
-          <span className="font-mono text-destructive font-semibold">
-            ${calculateLiquidationPrice().toFixed(2)}
-          </span>
-        </div>
+        <GlassTooltip 
+          content={
+            <div className="text-xs">
+              Total exposure: ${sizeNum.toFixed(2)} × {leverageNum}x
+            </div>
+          }
+        >
+          <div className="flex justify-between cursor-help">
+            <span className="text-foreground/70">Position Value</span>
+            <span className="font-mono font-semibold">${positionValue.toFixed(2)}</span>
+          </div>
+        </GlassTooltip>
+        <GlassTooltip 
+          content={
+            <div className="text-xs">
+              Amount locked from your balance
+            </div>
+          }
+        >
+          <div className="flex justify-between cursor-help">
+            <span className="text-foreground/70">Collateral</span>
+            <span className="font-mono font-semibold">${sizeNum.toFixed(2)}</span>
+          </div>
+        </GlassTooltip>
+        <GlassTooltip 
+          content={
+            <div className="text-xs space-y-1">
+              <div className="font-semibold">Liquidation Price</div>
+              <div className="text-foreground/70">
+                Position closes automatically at this price
+              </div>
+            </div>
+          }
+        >
+          <div className="flex justify-between cursor-help">
+            <span className="text-foreground/70">Est. Liquidation</span>
+            <span className="font-mono text-destructive font-semibold">
+              ${calculateLiquidationPrice().toFixed(2)}
+            </span>
+          </div>
+        </GlassTooltip>
       </div>
 
       <Button
