@@ -45,7 +45,7 @@ export default function TradingPanel() {
 
       // Get SOL-PERP market (market index 0 is typically SOL-PERP on Drift)
       const marketIndex = 0
-      const baseAssetAmount = parseFloat(amount) * 1_000_000_000 // Convert to lamports (SOL has 9 decimals)
+      const baseAssetAmount = parseFloat(amount) * 1_000_000_000 // Convert SOL amount to base asset units for Drift perpetuals (uses 9 decimals, not lamports)
       const leverageAmount = parseFloat(leverage)
 
       // Place a market order using the helper function
