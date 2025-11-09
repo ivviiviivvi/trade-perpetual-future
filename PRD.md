@@ -1,168 +1,154 @@
 # Planning Guide
 
-A social perpetual futures exchange with live market data, PvP gaming, affiliate rewards, and community-driven liquidity where users fund each other through a peer-to-peer model rather than house banking.
+A sentiment-driven market analysis tool that projects multiple parallel market realities based on social sentiment, provides downtrend alerts, and analyzes real-time hashtag trends to help traders understand where markets might be heading.
 
 **Experience Qualities**:
-1. **Social & Competitive** - Community-driven trading with leaderboards, affiliate networks, and PvP games that transform trading into a social experience where users compete and collaborate
-2. **Transparent & Fair** - Peer-to-peer funding model with complete transparency on liquidity sources, affiliate commissions, and game outcomes ensuring no house advantage
-3. **Engaging & Rewarding** - Multiple earning paths through trading P&L, affiliate commissions, and PvP games with real-time feedback that celebrates wins and encourages strategic improvement
+1. **Predictive & Insightful** - Multiple parallel reality projections showing different potential market outcomes with probability weights, helping users understand the range of possibilities rather than a single prediction
+2. **Vigilant & Responsive** - Automated alert system that watches sentiment shifts and notifies users immediately when negative trends emerge, acting as an early warning system
+3. **Transparent & Data-Rich** - Clear visualization of sentiment sources, hashtag trends, and social momentum with full transparency on data sources and analysis methodology
 
-**Complexity Level**: Complex Application (advanced functionality with accounts)
-  - User authentication, live market integration, affiliate tracking, PvP game engine, peer-to-peer order matching, social features, leaderboards, and comprehensive state management
+**Complexity Level**: Light Application (multiple features with basic state)
+  - Real-time sentiment tracking, multi-timeline projection engine, alert system, hashtag trending analysis, and visual data presentation without complex user accounts
 
 ## Essential Features
 
-### User Authentication & Profile
-- **Functionality**: GitHub OAuth sign-in with persistent user profiles tracking stats, P&L history, affiliate earnings, and game records
-- **Purpose**: Enable personalized experience, social features, and affiliate tracking
-- **Trigger**: Landing page with "Sign In with GitHub" prompt
-- **Progression**: Click sign in → GitHub OAuth → Profile created → Dashboard loads with user stats
-- **Success criteria**: User persists across sessions, profile displays cumulative stats, avatar and username shown
+### Multi-Reality Market Projections
+- **Functionality**: Display 3+ parallel timelines showing different possible market outcomes (bullish, bearish, neutral, volatility scenarios) with probability weightings based on current sentiment
+- **Purpose**: Help users understand the full range of market possibilities rather than a single prediction
+- **Trigger**: App loads with default stocks/crypto; user can add symbols
+- **Progression**: Symbol selected → AI analyzes current sentiment → Projects 3-5 potential realities → Each timeline shows price path with probability % → Updates every 5 minutes
+- **Success criteria**: Multiple timelines render clearly, probabilities sum to ~100%, scenarios are distinct and realistic, visual hierarchy emphasizes most likely path
 
-### Live Market Data & Charts
-- **Functionality**: Real-time price updates with candlestick/line charts, order books, and 24h statistics from live crypto markets
-- **Purpose**: Provide actual market conditions for realistic trading experience
-- **Trigger**: Markets load on app init and update continuously
-- **Progression**: Markets displayed → Select market → Chart renders with historical data → Updates in real-time
-- **Success criteria**: Prices match external sources, charts display properly, updates are smooth without lag
+### Downtrend Alert System
+- **Functionality**: Monitor sentiment scores continuously; trigger visual and notification alerts when sentiment crosses negative thresholds
+- **Purpose**: Early warning system to help users avoid losses or prepare for market moves
+- **Trigger**: Sentiment score drops below user-defined threshold or rapid negative shift detected
+- **Progression**: Sentiment tracked → Threshold crossed → Alert banner appears → Toast notification fires → Symbol highlighted in red → Alert history logged
+- **Success criteria**: Alerts fire within 30 seconds of threshold breach, no false positives, clear indication of severity, alert history is accessible
 
-### Perpetual Trading with Peer Liquidity
-- **Functionality**: Open long/short positions matched against other users' counter-positions (user-vs-user liquidity model)
-- **Purpose**: Enable real trading without house funding - users provide liquidity to each other
-- **Trigger**: User enters trade with available balance
-- **Progression**: Enter size & leverage → Submit order → Matched with counter-party → Position opens → P&L tracks against live prices
-- **Success criteria**: Orders match correctly, P&L calculates accurately, liquidations trigger at proper prices
+### Hashtag Trend Sentiment Analysis
+- **Functionality**: Track popular stock/crypto hashtags, analyze sentiment of mentions, show trending topics with sentiment scores
+- **Purpose**: Surface what traders are talking about and whether sentiment is bullish or bearish
+- **Trigger**: Hashtags/mentions analyzed every minute from simulated social data
+- **Progression**: Hashtags collected → AI sentiment analysis → Scored positive/negative/neutral → Ranked by volume and sentiment shift → Displayed with trend arrows
+- **Success criteria**: Hashtags update in real-time, sentiment accurately reflects tone, trending topics visible at a glance, historical sentiment tracked
 
-### Affiliate Program & Referral System
-- **Functionality**: Generate unique referral links, track signups, earn commission on referred users' trading fees
-- **Purpose**: Incentivize growth and reward community builders
-- **Trigger**: User accesses "Affiliate" tab and generates link
-- **Progression**: Create referral link → Share link → New user signs up via link → Referrer earns % of fees → Commission displayed in dashboard
-- **Success criteria**: Links track correctly, commissions calculate properly, earnings are transparent and verifiable
+### Real-Time Sentiment Dashboard
+- **Functionality**: Central view showing current sentiment scores, trend direction, volume, and momentum for tracked symbols
+- **Purpose**: Quick overview of market mood across multiple assets
+- **Trigger**: Dashboard loads on app start
+- **Progression**: Symbols load → Sentiment scores calculated → Dashboard grid displays → Color-coded by sentiment → Updates continuously
+- **Success criteria**: All tracked symbols visible, sentiment scores accurate, color coding intuitive, responsive to changes
 
-### PvP Games (Dice, Coin Flip, Price Prediction)
-- **Functionality**: Players wager on simple games - dice rolls, coin flips, or short-term price predictions against each other
-- **Purpose**: Provide additional earning/entertainment beyond trading, increase engagement
-- **Trigger**: User navigates to "Games" section and selects game type
-- **Progression**: Choose game → Set wager → System matches with opponent or create challenge → Game executes → Winner receives pot minus small fee
-- **Success criteria**: Games are provably fair, results verifiable, funds transfer correctly, no house advantage beyond small fee
-
-### Leaderboard & Social Feed
-- **Functionality**: Rankings by P&L, win rate, affiliate earnings; activity feed showing recent trades, big wins, referrals
-- **Purpose**: Foster competition and community engagement
-- **Trigger**: Users access Leaderboard tab
-- **Progression**: View rankings → See top performers → Filter by category → View social activity
-- **Success criteria**: Rankings update in real-time, stats are accurate, feed shows relevant activity
-
-### Position Management & Liquidation Engine
-- **Functionality**: Monitor positions, trigger liquidations when margin insufficient, redistribute liquidated collateral to counterparties
-- **Purpose**: Manage risk and ensure system solvency through peer-funded model
-- **Trigger**: Price movements causing margin to fall below maintenance
-- **Progression**: Position approaches liquidation → Warning shown → Liquidation triggers → Counterparty receives collateral
-- **Success criteria**: Liquidations execute correctly, no under-collateralized positions remain, funds distribute properly
+### Symbol Watchlist Management
+- **Functionality**: Add/remove stock and crypto symbols to track, persist watchlist across sessions
+- **Purpose**: Let users customize which assets they monitor
+- **Trigger**: User clicks "Add Symbol" button
+- **Progression**: Click add → Enter symbol → Validate symbol → Add to watchlist → Sentiment analysis begins → Symbol appears in dashboard
+- **Success criteria**: Symbols persist across sessions, invalid symbols rejected gracefully, removal is instant, common symbols suggested
 
 ## Edge Case Handling
-- **Unauthenticated Access** - Show landing page with feature highlights and sign-in prompt; hide trading and games
-- **Insufficient Balance** - Prevent trade submission and show clear error indicating required amount
-- **No Matching Counterparty** - Queue order and show "Waiting for match" state with option to cancel
-- **Network Connection Loss** - Detect disconnection, pause real-time updates, show reconnection banner
-- **Invalid Referral Link** - Gracefully handle malformed links, still allow signup without referrer credit
-- **Concurrent Position Updates** - Use optimistic locking to prevent race conditions in P&L calculations
-- **Liquidation Edge Cases** - Handle partial liquidations, ensure atomic fund transfers, prevent negative balances
-- **Game Result Disputes** - Store provably fair seeds and results for verification, provide resolution UI
-- **Zero Liquidity Markets** - Display warning when insufficient counterparty liquidity available
-- **Affiliate Self-Referral** - Detect and prevent users from earning commissions on their own accounts
+- **Invalid Symbol Entry** - Show autocomplete suggestions, validate against known tickers, display helpful error for unknown symbols
+- **No Sentiment Data Available** - Display "Analyzing..." state with skeleton loader, show last known sentiment with timestamp
+- **API/Data Failures** - Gracefully degrade to cached data, show warning banner indicating stale data
+- **Extreme Volatility** - Cap probability ranges to prevent unrealistic projections, show volatility warning
+- **All Realities Converge** - When scenarios are too similar, reduce to 3 distinct timelines with explanatory note
+- **Alert Fatigue** - Group rapid alerts, implement cooldown period, allow users to adjust sensitivity
+- **Conflicting Signals** - When sentiment is mixed, show uncertainty range and highlight conflicting indicators
 
 ## Design Direction
-The design should feel like a premium social trading platform - professional yet accessible, competitive yet supportive. Think dark mode crypto exchange aesthetics merged with social media engagement patterns. Clean data visualization with bold accent colors for actions and achievements. Interface should feel alive with real-time updates while maintaining clarity. Rich interface better serves the multiple feature sets (trading, games, social, affiliate).
+The design should feel like a sophisticated intelligence dashboard - calm, confident, and data-focused with subtle sci-fi undertones. Think Bloomberg Terminal meets modern data visualization with parallel timeline aesthetics. Clean, minimal interface that lets data breathe while maintaining urgency through strategic use of alerts and color. Interface should feel analytical yet accessible.
 
 ## Color Selection
-Triadic color scheme with neon accents - Professional dark backgrounds with electric highlights for different action types, maintaining the crypto/gaming aesthetic while ensuring clear visual hierarchy.
+Complementary color scheme with data visualization focus - Deep space blues for calm analysis complemented by warm alerts for urgency, maintaining analytical professionalism while ensuring alert hierarchy.
 
-- **Primary Color**: Electric Purple (`oklch(0.60 0.25 285)`) - Represents brand identity and primary actions with energy and modernity
-- **Secondary Colors**: Deep slate (`oklch(0.15 0.02 260)`) for backgrounds creating depth and focus
-- **Accent Colors**: 
-  - Neon green (`oklch(0.75 0.20 145)`) for long positions, wins, and positive outcomes
-  - Electric pink (`oklch(0.70 0.25 350)`) for short positions and negative P&L
-  - Cyan blue (`oklch(0.70 0.20 220)`) for affiliate/social features
-  - Amber gold (`oklch(0.75 0.20 70)`) for game features and achievements
+- **Primary Color**: Deep Ocean Blue (`oklch(0.45 0.15 240)`) - Represents analytical depth, trust, and calm data exploration
+- **Secondary Colors**: 
+  - Slate Blue (`oklch(0.30 0.08 250)`) for card backgrounds and containers
+  - Soft Blue Gray (`oklch(0.65 0.05 240)`) for secondary elements
+- **Accent Colors**:
+  - Alert Red (`oklch(0.55 0.22 25)`) for downtrend alerts and negative sentiment
+  - Success Green (`oklch(0.65 0.18 145)`) for positive sentiment and uptrends
+  - Warning Amber (`oklch(0.70 0.15 65)`) for caution states and volatility
+  - Cyan Highlight (`oklch(0.70 0.12 210)`) for selected realities and focus states
+  - Purple Accent (`oklch(0.60 0.18 290)`) for AI/projection indicators
 - **Foreground/Background Pairings**:
-  - Background (Deep slate `oklch(0.15 0.02 260)`): Light text (`oklch(0.95 0 0)`) - Ratio 13.2:1 ✓
-  - Card (Slightly lighter `oklch(0.20 0.03 260)`): Light text (`oklch(0.95 0 0)`) - Ratio 10.8:1 ✓
-  - Primary (Electric Purple `oklch(0.60 0.25 285)`): White text (`oklch(1 0 0)`) - Ratio 7.8:1 ✓
-  - Long/Win (Neon green `oklch(0.75 0.20 145)`): Dark text (`oklch(0.15 0.02 260)`) - Ratio 10.5:1 ✓
-  - Short/Loss (Electric pink `oklch(0.70 0.25 350)`): Dark text (`oklch(0.15 0.02 260)`) - Ratio 8.2:1 ✓
-  - Affiliate (Cyan `oklch(0.70 0.20 220)`): Dark text (`oklch(0.15 0.02 260)`) - Ratio 8.9:1 ✓
-  - Games (Amber `oklch(0.75 0.20 70)`): Dark text (`oklch(0.15 0.02 260)`) - Ratio 10.2:1 ✓
+  - Background (Dark Space `oklch(0.15 0.02 250)`): Light text (`oklch(0.95 0 0)`) - Ratio 13.5:1 ✓
+  - Card (Slate Blue `oklch(0.30 0.08 250)`): Light text (`oklch(0.95 0 0)`) - Ratio 8.2:1 ✓
+  - Primary (Deep Ocean `oklch(0.45 0.15 240)`): White text (`oklch(1 0 0)`) - Ratio 5.8:1 ✓
+  - Alert (Alert Red `oklch(0.55 0.22 25)`): White text (`oklch(1 0 0)`) - Ratio 5.2:1 ✓
+  - Success (Success Green `oklch(0.65 0.18 145)`): Dark text (`oklch(0.15 0.02 250)`) - Ratio 9.8:1 ✓
+  - Warning (Amber `oklch(0.70 0.15 65)`): Dark text (`oklch(0.15 0.02 250)`) - Ratio 11.2:1 ✓
+  - Accent (Cyan `oklch(0.70 0.12 210)`): Dark text (`oklch(0.15 0.02 250)`) - Ratio 10.5:1 ✓
 
 ## Font Selection
-Use Inter for primary UI and body text for excellent screen legibility, SF Pro for headings to match modern platform aesthetics, and JetBrains Mono for all numerical/financial data to ensure digit clarity.
+Inter for all interface text to maintain consistency and excellent legibility, with IBM Plex Mono for financial data and symbol tickers to ensure numerical clarity and professional data display.
 
 - **Typographic Hierarchy**:
-  - H1 (Main Title): SF Pro Bold/36px/tight tracking (-0.02em)
-  - H2 (Section Headers): SF Pro SemiBold/24px/tight tracking (-0.01em)
-  - H3 (Card Headers): Inter SemiBold/18px/normal tracking
-  - Body (UI Labels): Inter Regular/14px/normal tracking (1.5 line height)
-  - Price/Financial: JetBrains Mono Medium/varies by context/tight tracking
-  - Micro (Captions): Inter Regular/12px/normal tracking/60% opacity
-  - Stats Large: JetBrains Mono Bold/32px for key metrics
-  - Username: Inter Medium/14px for consistent identity display
+  - H1 (Page Title): Inter Bold/32px/tight tracking (-0.02em)
+  - H2 (Section Headers): Inter SemiBold/24px/normal tracking
+  - H3 (Card Titles): Inter SemiBold/18px/normal tracking
+  - Body (Descriptions): Inter Regular/14px/relaxed line-height (1.6)
+  - Data Labels: Inter Medium/13px/normal tracking
+  - Symbol Tickers: IBM Plex Mono Bold/16px/tight tracking
+  - Sentiment Scores: IBM Plex Mono SemiBold/varies/tabular-nums
+  - Probabilities: IBM Plex Mono Medium/14px for percentage displays
+  - Timestamps: Inter Regular/11px/60% opacity for metadata
 
 ## Animations
-Animations should communicate real-time activity, celebrate achievements, and provide continuous feedback for the live, social nature of the platform. Quick, purposeful animations that enhance understanding without slowing interactions.
+Animations should communicate data changes, guide attention to alerts, and provide smooth transitions between projection states without being distracting or slowing comprehension.
 
-- **Purposeful Meaning**: Real-time price tickers pulse on update, successful trades trigger celebration micro-animations, game wins show confetti burst, new referral signups show notification slide-in, position updates smoothly morph numbers
-- **Hierarchy of Movement**: Critical alerts (liquidation warnings) use urgent shake animations, wins use upward slide with scale, live updates use subtle fade transitions, navigation uses smooth page transitions with directional context
+- **Purposeful Meaning**: Reality timelines fade in sequentially to tell a story, sentiment scores pulse on update with color flash, alerts slide in from top with urgent motion, trend arrows animate direction change, probability bars grow from zero on load
+- **Hierarchy of Movement**: Critical downtrend alerts use bold slide-down with bounce, sentiment updates use subtle scale pulse (1.05x), reality transitions use smooth crossfade (300ms), chart data animates along path, hashtag trends shuffle with stagger effect
 
 ## Component Selection
 - **Components**: 
-  - Card with multiple variants (trading, position, game, profile, affiliate stats)
-  - Button variants (primary for trades, success for games/wins, outline for secondary actions)
-  - Tabs for main navigation (Trade, Games, Leaderboard, Affiliate, Profile)
-  - Dialog for game matches, trade confirmations, affiliate link generation
-  - Avatar for user profiles throughout social features
-  - Badge for user tiers, achievements, position types, leverage indicators
-  - Table for leaderboards with sortable columns
-  - Scroll Area for positions, history, social feed
-  - Chart components from recharts for candlestick price charts
-  - Progress bars for liquidation risk indicators
-  - Separator for content divisions
-  - Tooltip for hover explanations of complex features
-  - Sheet for mobile drawer navigation
-  - Toast for real-time notifications (trades, matches, referrals)
+  - Card for reality projections, sentiment summaries, hashtag trends, alert history
+  - Badge for sentiment labels (Bullish/Bearish/Neutral), probability percentages, trend indicators
+  - Button variants (primary for add symbol, destructive for remove, ghost for filters)
+  - Tabs for switching between Realities/Sentiment/Hashtags/Alerts views
+  - Alert/Banner for downtrend notifications at top of page
+  - Progress bars for probability distributions and sentiment strength
+  - Scroll Area for alert history and hashtag feed
+  - Separator for content divisions between sections
+  - Tooltip for explaining probability calculations and sentiment methodology
+  - Chart components from recharts for timeline projections
+  - Toast for real-time alert notifications
+  - Input for symbol search with autocomplete
   
 - **Customizations**: 
-  - Live price ticker component with smooth number transitions
-  - Candlestick chart with touch gestures for mobile
-  - Game lobby cards with animated waiting states
-  - Referral link generator with copy-to-clipboard
-  - Social activity feed with infinite scroll
-  - Liquidation risk meter with color-coded zones
+  - Multi-timeline chart showing parallel reality paths with diverging lines
+  - Sentiment meter with gradient color fill based on score
+  - Hashtag cloud with size based on volume and color based on sentiment
+  - Alert panel with severity indicators and expandable details
+  - Symbol card grid with real-time sentiment updates
+  - Probability distribution bars with percentage labels
   
 - **States**: 
-  - Buttons: Hover lift effect (translateY(-2px)), active press (scale 0.98), disabled reduced opacity with cursor-not-allowed
-  - Cards: Hover elevation increase, selected state with accent border glow, pulse animation for real-time updates
-  - Inputs: Focus with accent glow ring, error with destructive ring + shake animation, success with green checkmark
-  - Live elements: Pulse effect on price updates (green/red based on direction), smooth number counter transitions
+  - Cards: Hover elevation increase (4px to 8px shadow), selected state with cyan border glow, pulse animation on data update
+  - Buttons: Hover lift with scale (1.02x), active press (scale 0.98), loading state with spinner
+  - Alerts: Enter with slide-down + bounce, exit with fade-up, severity affects animation speed
+  - Sentiment scores: Color transition on change (red↔neutral↔green), scale pulse on significant shift
+  - Reality timelines: Opacity changes for probability focus, selected timeline highlights with glow
   
 - **Icon Selection**: 
-  - TrendUp/TrendDown for long/short and price movements
-  - ChartLineUp for trading section
-  - Dice/CoinVertical for game types  
-  - Users/UsersThree for social/leaderboard
-  - ShareNetwork for affiliate features
-  - Lightning for leverage
-  - WarningCircle for risk warnings
-  - Trophy for leaderboard winners
-  - CheckCircle for successful actions
-  - X for closing/canceling
+  - TrendUp/TrendDown for sentiment direction and price movement
+  - Bell/BellRinging for alerts and notifications
+  - ChartLine for reality projections
+  - Hash (#) for hashtag trends
+  - Eye for watchlist
+  - Plus/Minus for add/remove symbols
+  - ArrowsClockwise for refresh/update
+  - Warning for alert states
+  - Brain/Sparkle for AI analysis indicators
+  - CaretUp/CaretDown for trend arrows
   
-- **Spacing**: Base 4px unit with generous whitespace - 4/8/12/16/24/32px scale, cards with 20px padding, sections with 32px gaps, mobile reduces to 12/16/24px
+- **Spacing**: Base 4px system with generous breathing room - 8/16/24/32px gaps, cards with 24px padding, sections with 40px vertical spacing, tight 8px gaps for related data points
 - **Mobile**: 
-  - Bottom tab navigation for main sections
-  - Trading panel becomes bottom sheet
-  - Charts support touch zoom/pan gestures  
-  - Games in modal overlays
-  - Leaderboard switches to card-based scrolling list
-  - Collapsible header on scroll
-  - Position cards stack vertically with swipe-to-close
+  - Stack realities vertically instead of side-by-side
+  - Sentiment dashboard becomes scrollable card list
+  - Hashtag trends in compact list view
+  - Bottom sheet for symbol addition
+  - Alerts stack with swipe-to-dismiss
+  - Collapsible sections for better space usage
+  - Touch-friendly tap targets (48px minimum)
