@@ -16,8 +16,9 @@ export function MarketCard({ market, isSelected, onClick }: MarketCardProps) {
   return (
     <Card
       className={cn(
-        'p-4 cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg',
-        isSelected && 'ring-2 ring-primary shadow-xl'
+        'p-4 cursor-pointer transition-all duration-300 glass-hover border-white/10',
+        'hover:border-white/30 shine-effect',
+        isSelected && 'ring-2 ring-accent shadow-2xl shadow-accent/30 glass-ultra scale-105'
       )}
       onClick={onClick}
     >

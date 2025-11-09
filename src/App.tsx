@@ -4,9 +4,22 @@ import { Toaster, toast } from 'sonner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SignInPage } from '@/components/SignInPage'
 import { CursorParticles } from '@/components/CursorParticles'
+import { DynamicBackground } from '@/components/DynamicBackground'
+import { PersonalizationPanel } from '@/components/PersonalizationPanel'
 import { useMarketBackground } from '@/hooks/use-market-background'
 import { useLivePrices } from '@/hooks/use-live-prices'
-import { ChartLine, Hash, Bell, Eye, TrendUp, DiceThree, ShareNetwork, Sparkle } from '@phosphor-icons/react'
+import { useThemePreferences } from '@/hooks/use-theme-preferences'
+import { 
+  ChartLine, 
+  Hash, 
+  Bell, 
+  Eye, 
+  TrendUp, 
+  DiceThree, 
+  ShareNetwork, 
+  Sparkle,
+  Palette 
+} from '@phosphor-icons/react'
 import type { Symbol, Reality, HashtagTrend, Alert, Market, Position, Game, UserProfile } from '@/lib/types'
 import { analyzeSentiment, generateRealities, analyzeHashtags, checkForAlerts } from '@/lib/sentiment'
 import { generateSeed, rollDice, flipCoin, predictPrice, calculateGamePayout } from '@/lib/game-logic'
@@ -21,7 +34,7 @@ import { MarketCard } from '@/components/MarketCard'
 import { TradingPanel } from '@/components/TradingPanel'
 import { PositionCard } from '@/components/PositionCard'
 import { PriceChart } from '@/components/PriceChart'
-import { GamesTab } from '@/components/GamesTab'
+import { EnhancedGamesTab } from '@/components/EnhancedGamesTab'
 import { AffiliateTab } from '@/components/AffiliateTab'
 import { LeaderboardTab } from '@/components/LeaderboardTab'
 
@@ -108,6 +121,11 @@ function App() {
   
   const [isLoadingSentiment, setIsLoadingSentiment] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [particlesEnabled] = useKV<boolean>('particles-enabled', true)
+  
+  const [marketSentiment, setMarketSentiment] = useState<'bullish' | 'bearish' | 'neutral'>('neutral')
+  
+  useThemePreferences()
 
   const currentWatchlist = watchlist ?? DEFAULT_SYMBOLS
   const currentAlerts = (alerts ?? []).filter(a => !a.dismissed)
@@ -157,6 +175,17 @@ function App() {
         }
       })
       setPositions(updatedPositions)
+    }
+  }, [liveMarkets])
+
+  useEffect(() => {
+    const avgChange = liveMarkets.reduce((sum, m) => sum + m.change24h, 0) / liveMarkets.length
+    if (avgChange > 1) {
+      setMarketSentiment('bullish')
+    } else if (avgChange < -1) {
+      setMarketSentiment('bearish')
+    } else {
+      setMarketSentiment('neutral')
     }
   }, [liveMarkets])
 
@@ -435,29 +464,30 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative">
-      <CursorParticles />
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      <DynamicBackground marketSentiment={marketSentiment} intensity={0.6} />
+      {(particlesEnabled ?? true) && <CursorParticles />}
       <Toaster position="top-right" />
 
-      <header className="border-b border-border/50 glass-strong backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b border-border/50 glass-ultra backdrop-blur-xl sticky top-0 z-50 border-b-white/20">
         <div className="max-w-[1800px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="text-3xl">💥</div>
+              <div className="text-3xl animate-bounce-subtle">💥</div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-accent to-cyan bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold text-gradient-animated">
                   Bang Perp Exchange
                 </h1>
-                <p className="text-xs text-foreground/60">Social Trading • AI Sentiment • PvP Games</p>
+                <p className="text-xs text-foreground/60">Social Trading • AI Sentiment • PvP Games • Personalization</p>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="glass rounded-xl px-4 py-2 border border-white/10">
+              <div className="glass-strong rounded-xl px-4 py-2 border border-white/20 shine-effect">
                 <div className="text-xs text-foreground/60">Balance</div>
-                <div className="font-mono font-bold text-lg">${currentProfile.balance.toFixed(2)}</div>
+                <div className="font-mono font-bold text-lg text-gradient">${currentProfile.balance.toFixed(2)}</div>
               </div>
-              <div className="glass rounded-xl px-3 py-2 border border-white/10">
+              <div className="glass-strong rounded-xl px-3 py-2 border border-white/20">
                 <span className="text-sm font-semibold">{username}</span>
               </div>
             </div>
@@ -478,31 +508,35 @@ function App() {
           </div>
         )}
 
-        <Tabs defaultValue="markets" className="space-y-6">
-          <TabsList className="glass-strong grid w-full grid-cols-6 h-14 p-1">
-            <TabsTrigger value="markets" className="gap-2 data-[state=active]:glass-strong">
+        <Tabs defaultValue="markets" className="space-y-6 relative z-10">
+          <TabsList className="glass-ultra grid w-full grid-cols-7 h-14 p-1 border border-white/20">
+            <TabsTrigger value="markets" className="gap-2 data-[state=active]:glass-ultra data-[state=active]:text-accent transition-all">
               <TrendUp size={18} weight="duotone" />
               Markets
             </TabsTrigger>
-            <TabsTrigger value="sentiment" className="gap-2 data-[state=active]:glass-strong">
+            <TabsTrigger value="sentiment" className="gap-2 data-[state=active]:glass-ultra data-[state=active]:text-accent transition-all">
               <Eye size={18} weight="duotone" />
               Sentiment
             </TabsTrigger>
-            <TabsTrigger value="realities" className="gap-2 data-[state=active]:glass-strong" disabled={!selectedSymbol}>
+            <TabsTrigger value="realities" className="gap-2 data-[state=active]:glass-ultra data-[state=active]:text-ai-purple transition-all" disabled={!selectedSymbol}>
               <ChartLine size={18} weight="duotone" />
               Realities
             </TabsTrigger>
-            <TabsTrigger value="games" className="gap-2 data-[state=active]:glass-strong">
+            <TabsTrigger value="games" className="gap-2 data-[state=active]:glass-ultra data-[state=active]:text-amber transition-all">
               <DiceThree size={18} weight="duotone" />
               Games
             </TabsTrigger>
-            <TabsTrigger value="affiliate" className="gap-2 data-[state=active]:glass-strong">
+            <TabsTrigger value="affiliate" className="gap-2 data-[state=active]:glass-ultra data-[state=active]:text-cyan transition-all">
               <ShareNetwork size={18} weight="duotone" />
               Affiliate
             </TabsTrigger>
-            <TabsTrigger value="alerts" className="gap-2 data-[state=active]:glass-strong">
+            <TabsTrigger value="alerts" className="gap-2 data-[state=active]:glass-ultra data-[state=active]:text-short transition-all">
               <Bell size={18} weight="duotone" />
               Alerts ({currentAlerts.length})
+            </TabsTrigger>
+            <TabsTrigger value="customize" className="gap-2 data-[state=active]:glass-ultra data-[state=active]:text-magenta transition-all">
+              <Palette size={18} weight="duotone" />
+              Customize
             </TabsTrigger>
           </TabsList>
 
@@ -676,7 +710,7 @@ function App() {
           </TabsContent>
 
           <TabsContent value="games">
-            <GamesTab
+            <EnhancedGamesTab
               balance={currentProfile.balance}
               onCreateGame={handleCreateGame}
               onJoinGame={handleJoinGame}
@@ -737,6 +771,10 @@ function App() {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="customize">
+            <PersonalizationPanel />
           </TabsContent>
         </Tabs>
       </main>

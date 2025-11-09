@@ -1,11 +1,11 @@
 # Planning Guide
 
-A comprehensive trading and sentiment platform that combines perpetual futures trading, AI-powered market sentiment analysis with multi-reality projections, PvP gaming, and affiliate revenue features - all in a sleek glassmorphic interface.
+A comprehensive trading and sentiment platform that combines perpetual futures trading, AI-powered market sentiment analysis with multi-reality projections, PvP gaming, and affiliate revenue features - all in a deeply customizable, vibrant glassmorphic interface with dynamic, ever-changing transparent elements that layer and interact beautifully.
 
 **Experience Qualities**:
-1. **Intelligent & Predictive** - AI-driven sentiment analysis projects multiple parallel market realities, helping traders visualize potential outcomes with real-time alerts for downtrends and volatility
-2. **Interactive & Engaging** - Glassmorphic UI with cursor particle effects, smooth color transitions, and animated gaming experiences that make trading and analysis feel alive and responsive
-3. **Community-Driven & Rewarding** - Affiliate program with referral tracking, PvP games for entertainment, leaderboards for competition, creating a social trading ecosystem
+1. **Intelligent & Adaptive** - AI-driven sentiment analysis projects multiple parallel market realities while the entire interface adapts to market conditions with dynamic backgrounds, color shifts, and visual feedback
+2. **Immersive & Personalized** - Advanced glassmorphism with user-customizable themes, particle effects, animation speeds, and visual intensities creates a unique experience for each trader
+3. **Interactive & Delightful** - Layered glass surfaces that respond to interaction, cursor particles that follow movement, smooth transitions between states, and animated gaming experiences make every action feel alive and rewarding
 
 **Complexity Level**: Complex Application (advanced functionality, accounts)
   - Multiple integrated systems: perpetual trading, sentiment analysis, gaming, affiliate tracking, real-time price feeds, position management, and social features with persistent user data
@@ -55,6 +55,20 @@ A comprehensive trading and sentiment platform that combines perpetual futures t
 - **Progression**: Dashboard loads → Prices stream in → Charts update → User can click to trade
 - **Success criteria**: Prices update smoothly without lag, charts responsive, data accurate
 
+### User Personalization System
+- **Functionality**: Deep customization of visual themes, particle effects, glass intensity, and animation speeds with instant preview
+- **Purpose**: Allow users to optimize the interface for their preferences, device performance, and accessibility needs
+- **Trigger**: User navigates to Customize tab
+- **Progression**: Select theme → Adjust particle intensity → Control glass blur → Set animation speed → Changes apply instantly → Preferences persist across sessions
+- **Success criteria**: All preferences save immediately, visual changes are smooth, performance remains stable across all settings
+
+### Dynamic Background & Market Feedback
+- **Functionality**: Canvas-based particle network that changes color and intensity based on real-time market sentiment
+- **Purpose**: Provide ambient awareness of market conditions without requiring direct attention
+- **Trigger**: Automatic on app load, updates continuously
+- **Progression**: Markets update → Calculate aggregate sentiment → Particles shift color (green/red/blue) → Connections intensify with volatility → Smooth transitions between states
+- **Success criteria**: Background responds within 1 second to market changes, particle rendering maintains 60fps, sentiment colors are intuitive
+
 ## Edge Case Handling
 - **Invalid Symbol Entry** - Autocomplete suggestions, validate against known tickers, graceful error messages
 - **Insufficient Balance** - Disable trade/game buttons, show clear messaging, suggest deposit (in real app)
@@ -66,7 +80,7 @@ A comprehensive trading and sentiment platform that combines perpetual futures t
 - **Zero Balance State** - Show welcome message, explain demo mode, guide to first actions
 
 ## Design Direction
-The design should feel like a futuristic trading terminal with Apple-like refinement - glassmorphic surfaces that layer and interact, smooth animations that guide attention, and vibrant accent colors that communicate urgency or success. Dark theme with deep space backgrounds, glowing elements, and translucent panels create depth. Every interaction should feel responsive and delightful while maintaining analytical clarity.
+The design should feel like a futuristic trading terminal with Apple-like refinement merged with cyberpunk vibrancy - multi-layered glassmorphic surfaces that shift and interact with one another, smooth animations that guide attention naturally, and vibrant accent colors that communicate urgency or success. Deep space backgrounds with animated particle networks create living depth, while translucent panels layer to form visual hierarchy. Every interaction produces delightful feedback while maintaining analytical clarity. The interface adapts dynamically to market sentiment, user preferences, and interaction contexts, creating a truly personalized and ever-changing experience.
 
 ## Color Selection
 Custom palette with dark base and vibrant accents - Deep space aesthetic with glassmorphic layers, neon highlights for actions, and semantic colors for long/short positions and alerts.
@@ -104,24 +118,27 @@ Inter for all UI elements with IBM Plex Mono for financial data, prices, tickers
   - Timestamps: Inter Regular/12px/60% opacity
 
 ## Animations
-Animations communicate state changes, guide attention to important updates, and add delight without sacrificing performance or clarity. Cursor particles follow movement, gradients shift with market trends, and gaming experiences are visually engaging.
+Animations communicate state changes, guide attention to important updates, add delight, and reinforce the brand's futuristic identity. The system is layered - ambient animations run continuously, micro-interactions respond to user input, and major transitions signal significant events. Users can control animation speed globally.
 
 - **Purposeful Meaning**: 
-  - Cursor particles trail mouse movement creating interactivity
-  - Background gradients shift colors based on dominant market sentiment (green for bullish, red for bearish)
-  - Reality projections fade in sequentially to tell story
-  - Sentiment scores pulse on updates with color transition
-  - Alerts slide down with urgency-based timing
-  - Gaming animations (dice roll, coin flip) are satisfying and quick (2-3s max)
-  - Position P&L numbers animate color on profit/loss changes
-  - Chart lines draw in smoothly on load
+  - Cursor particles trail mouse movement creating tangible interactivity
+  - Background gradients and particles shift colors dynamically based on market sentiment (green for bullish, red for bearish, blue for neutral)
+  - Reality projections fade in sequentially with stagger to tell a visual story
+  - Sentiment scores pulse and color-shift on updates with smooth transitions
+  - Alerts slide down with urgency-based timing and bounce
+  - Gaming animations (dice roll, coin flip, particle bursts) are satisfying and quick (2-3s max)
+  - Position P&L numbers animate color transitions on profit/loss changes
+  - Chart lines draw in smoothly on load with easing
+  - Glass surfaces morph and glow on interaction
+  - Text gradients animate subtly to draw attention
+  - Shimmer effects pass across premium UI elements
   
 - **Hierarchy of Movement**: 
   - **Critical**: Downtrend alerts (bold slide with bounce, 400ms)
-  - **High**: Game results, trade confirmations (scale + fade, 300ms)
-  - **Medium**: Sentiment updates, price changes (pulse, 200ms)
-  - **Low**: Hover states, tab switches (smooth transition, 150ms)
-  - **Ambient**: Cursor particles, gradient shifts (continuous, subtle)
+  - **High**: Game results, trade confirmations, theme changes (scale + fade, 300ms)
+  - **Medium**: Sentiment updates, price changes, tab switches (pulse, 200ms)
+  - **Low**: Hover states, tooltip appearances, focus rings (smooth transition, 150ms)
+  - **Ambient**: Cursor particles (continuous, 60fps), gradient shifts (8-15s cycles), particle network (continuous), floating elements (6s cycles)
 
 ## Component Selection
 - **Components**: 
