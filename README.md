@@ -1,4 +1,4 @@
-# 💥 Bang Perp Exchange - Solana Perpetual Trading Platform
+# Sol-Trade-Perpetual_Future_a-Trading-Platform
 
 A meme-style, non-custodial perpetual futures trading website on Solana, powered by Drift Protocol. Users can connect their wallets (Phantom, Solflare) and trade real money through Drift Protocol integration - earning referral fees legally without custodying funds.
 
