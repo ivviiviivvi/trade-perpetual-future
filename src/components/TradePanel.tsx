@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { DriftClient, MarketType, PositionDirection, User, BN } from '@drift-labs/sdk'
+import {
+  DriftClient,
+  MarketType,
+  PositionDirection,
+  User,
+  BN,
+  convertToNumber,
+  QUOTE_PRECISION,
+  OrderTriggerCondition,
+  OrderType,
+  calculateBidAskPrice
+} from '@drift-labs/sdk'
+import { markets } from '../utils/markets'
 
 interface TradePanelProps {
-  termsAccepted: boolean
+  onDriftClientChange?: (client: DriftClient | null, user: User | null) => void
 }
 
-function TradePanel({ termsAccepted }: TradePanelProps) {
+function TradePanel({ onDriftClientChange }: TradePanelProps) {
   const { connection } = useConnection()
   const { publicKey, signTransaction, signAllTransactions } = useWallet()
 
@@ -14,86 +26,20 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isInitializing, setIsInitializing] = useState(false)
   const [amount, setAmount] = useState('')
-  const [amountError, setAmountError] = useState('')
   const [leverage, setLeverage] = useState('5')
-  const [slippageTolerance, setSlippageTolerance] = useState(0.5) // 0.5% default
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState('')
-  const [selectedMarket, setSelectedMarket] = useState(0) // 0 = SOL-PERP, 1 = BTC-PERP, etc.
+  const [selectedMarket, setSelectedMarket] = useState(0)
+  const [orderType, setOrderType] = useState<'market' | 'limit' | 'stop'>('market')
+  const [limitPrice, setLimitPrice] = useState('')
+  const [triggerPrice, setTriggerPrice] = useState('')
 
-  // Market information
-  const markets = [
-    { name: 'SOL-PERP', index: 0, symbol: 'SOL' },
-    { name: 'BTC-PERP', index: 1, symbol: 'BTC' },
-    { name: 'ETH-PERP', index: 2, symbol: 'ETH' },
-  ]
-
-  // Validation constants
-  const MAX_POSITION_SIZE_USDC = 100_000 // $100k max per trade
-  const MIN_POSITION_SIZE_USDC = 1 // $1 minimum
-
-  // Input validation helper
-  const validateAmount = (value: string): { valid: boolean; error?: string } => {
-    if (!value || value.trim() === '') {
-      return { valid: false, error: 'Amount required' }
-    }
-
-    if (value.includes('e') || value.includes('E')) {
-      return { valid: false, error: 'Scientific notation not allowed' }
-    }
-
-    const num = parseFloat(value)
-
-    if (isNaN(num)) {
-      return { valid: false, error: 'Invalid number' }
-    }
-
-    if (num < 0) {
-      return { valid: false, error: 'Amount must be positive' }
-    }
-
-    if (num < MIN_POSITION_SIZE_USDC) {
-      return { valid: false, error: `Minimum ${MIN_POSITION_SIZE_USDC} USDC` }
-    }
-
-    if (num > MAX_POSITION_SIZE_USDC) {
-      return { valid: false, error: `Maximum ${MAX_POSITION_SIZE_USDC} USDC` }
-    }
-
-    const decimalPlaces = (value.split('.')[1] || '').length
-    if (decimalPlaces > 2) {
-      return { valid: false, error: 'Maximum 2 decimal places' }
-    }
-
-    return { valid: true }
-  }
-
-  // User-friendly error messages
-  const getUserFriendlyError = (error: any): string => {
-    const message = error instanceof Error ? error.message : String(error)
-
-    if (message.includes('insufficient funds') || message.includes('insufficient lamports')) {
-      return 'Insufficient balance. Please add more USDC or SOL.'
-    }
-    if (message.includes('slippage')) {
-      return 'Price moved too much. Try increasing slippage tolerance.'
-    }
-    if (message.includes('User rejected') || message.includes('rejected')) {
-      return 'Transaction cancelled by user.'
-    }
-    if (message.includes('simulation failed')) {
-      return 'Transaction validation failed. Check your inputs and balance.'
-    }
-    if (message.includes('timeout')) {
-      return 'Transaction timeout. Please try again.'
-    }
-
-    return `Error: ${message}`
-  }
+  // Real-time price data
+  const [oraclePrice, setOraclePrice] = useState<string | null>(null)
+  const [bidPrice, setBidPrice] = useState<string | null>(null)
+  const [askPrice, setAskPrice] = useState<string | null>(null)
 
   // Initialize Drift Client when wallet connects
-  // Note: driftClient is intentionally excluded from deps to prevent re-initialization loop
-  // This effect should only run when wallet connection changes
   useEffect(() => {
     if (publicKey && connection && signTransaction && signAllTransactions && !driftClient) {
       initializeDrift()
@@ -101,36 +47,50 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publicKey, connection, signTransaction, signAllTransactions])
 
-  // Cleanup subscriptions on unmount or when drift client/user changes
+  // Update real-time prices
   useEffect(() => {
-    return () => {
-      if (driftClient) {
-        driftClient.unsubscribe().catch((err) => {
-          console.error('Error unsubscribing driftClient:', err)
-        })
-      }
-      if (user) {
-        user.unsubscribe().catch((err) => {
-          console.error('Error unsubscribing user:', err)
-        })
-      }
-    }
-  }, [driftClient, user])
+    if (driftClient && markets.length > 0) {
+      const updatePrices = () => {
+        try {
+          const market = markets[selectedMarket]
+          const marketAccount = driftClient.getPerpMarketAccount(market.marketIndex)
+          if (!marketAccount) return
 
-  // Cleanup when wallet disconnects
+          const oracleData = driftClient.getOracleDataForPerpMarket(market.marketIndex)
+
+          // Create MMOraclePriceData format for calculateBidAskPrice
+          const mmOracleData = {
+            price: oracleData.price,
+            slot: oracleData.slot,
+            confidence: oracleData.confidence,
+            hasSufficientNumberOfDataPoints: oracleData.hasSufficientNumberOfDataPoints,
+            twap: oracleData.twap,
+            twapConfidence: oracleData.twapConfidence,
+            isMMOracleActive: false // Default to false for standard oracle
+          }
+
+          const [bid, ask] = calculateBidAskPrice(marketAccount.amm, mmOracleData)
+
+          setOraclePrice(convertToNumber(oracleData.price, QUOTE_PRECISION).toFixed(2))
+          setBidPrice(convertToNumber(bid, QUOTE_PRECISION).toFixed(2))
+          setAskPrice(convertToNumber(ask, QUOTE_PRECISION).toFixed(2))
+        } catch (error) {
+          console.error('Error updating prices:', error)
+        }
+      }
+
+      updatePrices()
+      const interval = setInterval(updatePrices, 2000) // Update every 2 seconds
+      return () => clearInterval(interval)
+    }
+  }, [selectedMarket, driftClient])
+
+  // Notify parent component when drift client changes
   useEffect(() => {
-    if (!publicKey && driftClient) {
-      driftClient.unsubscribe().catch(console.error)
-      setDriftClient(null)
-
-      if (user) {
-        user.unsubscribe().catch(console.error)
-        setUser(null)
-      }
-
-      setStatus('Wallet disconnected')
+    if (onDriftClientChange) {
+      onDriftClientChange(driftClient, user)
     }
-  }, [publicKey, driftClient, user])
+  }, [driftClient, user, onDriftClientChange])
 
   const initializeDrift = async () => {
     if (!publicKey || !signTransaction || !signAllTransactions) return
@@ -185,73 +145,76 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
   }
 
   const openPosition = async (direction: PositionDirection) => {
-    if (!driftClient || !user || !amount || !termsAccepted) {
-      setStatus('Please connect wallet, enter amount, and accept terms')
-      return
-    }
-
-    // Validate amount
-    const validation = validateAmount(amount)
-    if (!validation.valid) {
-      setStatus(`❌ ${validation.error}`)
+    if (!driftClient || !user || !amount) {
+      setStatus('Please connect wallet and enter amount')
       return
     }
 
     setLoading(true)
     const directionText = direction === PositionDirection.LONG ? 'LONG' : 'SHORT'
+    setStatus(`Opening ${directionText} ${orderType} order...`)
 
     try {
-      // Calculate position size using BN math to avoid overflow
-      const baseAmount = new BN(Math.floor(parseFloat(amount) * 1_000_000))
-      const leverageMultiplier = new BN(Math.floor(parseFloat(leverage)))
-      const positionSize = baseAmount.mul(leverageMultiplier) // Use BN.mul instead of JS number math
+      const baseAmount = new BN(parseFloat(amount) * 1_000_000)
+      const leverageMultiplier = Math.floor(parseFloat(leverage))
+      const positionSize = baseAmount.mul(new BN(leverageMultiplier))
+      const marketIndex = markets[selectedMarket].marketIndex
 
-      const marketIndex = markets[selectedMarket].index
+      let txSig: string
 
-      // Transaction parameters with slippage protection
-      const orderParams = {
-        orderType: 0, // Market order
-        marketIndex,
-        direction,
-        baseAssetAmount: positionSize,
-        marketType: MarketType.PERP,
-        maxSlippageBps: new BN(Math.floor(slippageTolerance * 100)), // Convert to basis points
+      if (orderType === 'market') {
+        // Market order
+        txSig = await driftClient.placeAndTakePerpOrder({
+          orderType: OrderType.MARKET,
+          marketIndex,
+          direction,
+          baseAssetAmount: positionSize,
+          marketType: MarketType.PERP,
+        })
+      } else if (orderType === 'limit') {
+        // Limit order
+        if (!limitPrice) {
+          setStatus('❌ Please enter a limit price')
+          setLoading(false)
+          return
+        }
+        const limitPriceBN = QUOTE_PRECISION.mul(new BN(Math.floor(parseFloat(limitPrice) * 1_000_000))).div(new BN(1_000_000))
+
+        txSig = await driftClient.placePerpOrder({
+          orderType: OrderType.LIMIT,
+          marketIndex,
+          direction,
+          baseAssetAmount: positionSize,
+          price: limitPriceBN,
+        })
+      } else {
+        // Stop market order
+        if (!triggerPrice) {
+          setStatus('❌ Please enter a trigger price')
+          setLoading(false)
+          return
+        }
+        const triggerPriceBN = QUOTE_PRECISION.mul(new BN(Math.floor(parseFloat(triggerPrice) * 1_000_000))).div(new BN(1_000_000))
+        const triggerCondition = direction === PositionDirection.LONG
+          ? OrderTriggerCondition.BELOW
+          : OrderTriggerCondition.ABOVE
+
+        txSig = await driftClient.placePerpOrder({
+          orderType: OrderType.TRIGGER_MARKET,
+          marketIndex,
+          direction,
+          baseAssetAmount: positionSize,
+          triggerPrice: triggerPriceBN,
+          triggerCondition,
+        })
       }
 
-      // Simulate transaction before signing
-      setStatus('🔍 Validating transaction...')
-
-      // Note: Drift SDK's placeAndTakePerpOrder internally handles simulation
-      // For more explicit control, we could build and simulate the transaction separately
-      // For now, we rely on the SDK's built-in checks
-
-      setStatus(`Opening ${directionText} position...`)
-
-      // Execute the trade
-      const txSig = await driftClient.placeAndTakePerpOrder(orderParams)
-
-      // Wait for confirmation
-      setStatus('⏳ Transaction submitted, waiting for confirmation...')
-
-      const confirmation = await connection.confirmTransaction(txSig, 'confirmed')
-
-      // Check if transaction actually succeeded
-      if (confirmation.value.err) {
-        throw new Error('Transaction failed on-chain')
-      }
-
-      setStatus(`✅ ${directionText} position opened! TX: ${txSig.slice(0, 8)}...`)
-
-      // Clear form
+      setStatus(`✅ ${directionText} ${orderType} order placed! TX: ${txSig.slice(0, 8)}...`)
       setAmount('')
-      setAmountError('')
-
-      // Clear success message after delay
       setTimeout(() => setStatus(''), 5000)
     } catch (error) {
       console.error('Error opening position:', error)
-      const userMessage = getUserFriendlyError(error)
-      setStatus(`❌ ${userMessage}`)
+      setStatus(`❌ Error: ${error instanceof Error ? error.message : 'Failed to open position'}`)
     } finally {
       setLoading(false)
     }
@@ -281,9 +244,9 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
             {/* Market Selection */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Select Market</span>
+                <span className="label-text font-bold">Select Market</span>
               </label>
-              <select 
+              <select
                 className="select select-bordered w-full"
                 value={selectedMarket}
                 onChange={(e) => setSelectedMarket(parseInt(e.target.value))}
@@ -296,37 +259,115 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
               </select>
             </div>
 
+            {/* Real-time Price Display */}
+            {oraclePrice && (
+              <div className="stats shadow w-full my-4">
+                <div className="stat">
+                  <div className="stat-title">Oracle Price</div>
+                  <div className="stat-value text-lg">${oraclePrice}</div>
+                  <div className="stat-desc">Market price</div>
+                </div>
+                <div className="stat">
+                  <div className="stat-title">Bid</div>
+                  <div className="stat-value text-lg text-success">${bidPrice}</div>
+                  <div className="stat-desc">Buy price</div>
+                </div>
+                <div className="stat">
+                  <div className="stat-title">Ask</div>
+                  <div className="stat-value text-lg text-error">${askPrice}</div>
+                  <div className="stat-desc">Sell price</div>
+                </div>
+              </div>
+            )}
+
+            {/* Order Type Selection */}
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text font-bold">Order Type</span>
+              </label>
+              <div className="join w-full">
+                <button
+                  className={`btn join-item flex-1 ${orderType === 'market' ? 'btn-active btn-primary' : ''}`}
+                  onClick={() => setOrderType('market')}
+                >
+                  Market
+                </button>
+                <button
+                  className={`btn join-item flex-1 ${orderType === 'limit' ? 'btn-active btn-primary' : ''}`}
+                  onClick={() => setOrderType('limit')}
+                >
+                  Limit
+                </button>
+                <button
+                  className={`btn join-item flex-1 ${orderType === 'stop' ? 'btn-active btn-primary' : ''}`}
+                  onClick={() => setOrderType('stop')}
+                >
+                  Stop Market
+                </button>
+              </div>
+            </div>
+
+            {/* Limit Price Input */}
+            {orderType === 'limit' && (
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Limit Price ($)</span>
+                  <span className="label-text-alt">Current: ${oraclePrice || 'N/A'}</span>
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter limit price"
+                  className="input input-bordered w-full"
+                  value={limitPrice}
+                  onChange={(e) => setLimitPrice(e.target.value)}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            )}
+
+            {/* Stop Trigger Price Input */}
+            {orderType === 'stop' && (
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Trigger Price ($)</span>
+                  <span className="label-text-alt">Current: ${oraclePrice || 'N/A'}</span>
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter trigger price"
+                  className="input input-bordered w-full"
+                  value={triggerPrice}
+                  onChange={(e) => setTriggerPrice(e.target.value)}
+                  min="0"
+                  step="0.01"
+                />
+                <label className="label">
+                  <span className="label-text-alt">Order triggers when price crosses this level</span>
+                </label>
+              </div>
+            )}
+
             {/* Amount Input */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Amount (USDC)</span>
-                <span className="label-text-alt">
-                  Min: ${MIN_POSITION_SIZE_USDC} | Max: ${MAX_POSITION_SIZE_USDC.toLocaleString()}
-                </span>
+                <span className="label-text font-bold">Amount (USDC)</span>
               </label>
               <input
-                type="text"
+                type="number"
                 placeholder="Enter amount"
-                className={`input input-bordered w-full ${amountError ? 'input-error' : ''}`}
+                className="input input-bordered w-full"
                 value={amount}
-                onChange={(e) => {
-                  const value = e.target.value
-                  setAmount(value)
-                  const validation = validateAmount(value)
-                  setAmountError(validation.error || '')
-                }}
+                onChange={(e) => setAmount(e.target.value)}
+                min="0"
+                step="0.01"
               />
-              {amountError && (
-                <label className="label">
-                  <span className="label-text-alt text-error">{amountError}</span>
-                </label>
-              )}
             </div>
 
             {/* Leverage Slider */}
             <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">Leverage: {leverage}x</span>
+                <span className="label-text font-bold">Leverage: {leverage}x</span>
               </label>
               <input
                 type="range"
@@ -339,32 +380,15 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
               />
               <div className="w-full flex justify-between text-xs px-2 mt-1">
                 <span>1x</span>
+                <span>2x</span>
+                <span>3x</span>
+                <span>4x</span>
                 <span>5x</span>
+                <span>6x</span>
+                <span>7x</span>
+                <span>8x</span>
+                <span>9x</span>
                 <span>10x</span>
-              </div>
-            </div>
-
-            {/* Slippage Tolerance */}
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Max Slippage: {slippageTolerance}%</span>
-                <span className="label-text-alt">
-                  {slippageTolerance > 2 && '⚠️ High slippage'}
-                </span>
-              </label>
-              <input
-                type="range"
-                min="0.1"
-                max="5"
-                value={slippageTolerance}
-                onChange={(e) => setSlippageTolerance(parseFloat(e.target.value))}
-                className="range range-secondary"
-                step="0.1"
-              />
-              <div className="w-full flex justify-between text-xs px-2 mt-1">
-                <span>0.1%</span>
-                <span>2.5%</span>
-                <span>5%</span>
               </div>
             </div>
 
@@ -373,7 +397,7 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
               <button
                 className="btn btn-success btn-lg"
                 onClick={() => openPosition(PositionDirection.LONG)}
-                disabled={loading || !driftClient || !amount || !termsAccepted || amountError !== ''}
+                disabled={loading || !driftClient || !amount}
               >
                 {loading ? (
                   <span className="loading loading-spinner"></span>
@@ -384,7 +408,7 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
               <button
                 className="btn btn-error btn-lg"
                 onClick={() => openPosition(PositionDirection.SHORT)}
-                disabled={loading || !driftClient || !amount || !termsAccepted || amountError !== ''}
+                disabled={loading || !driftClient || !amount}
               >
                 {loading ? (
                   <span className="loading loading-spinner"></span>
@@ -393,16 +417,6 @@ function TradePanel({ termsAccepted }: TradePanelProps) {
                 )}
               </button>
             </div>
-
-            {/* Terms Warning if not accepted */}
-            {!termsAccepted && publicKey && (
-              <div className="alert alert-warning mt-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <span>You must read and accept the terms above before trading</span>
-              </div>
-            )}
 
             {/* Status Message */}
             {status && (
