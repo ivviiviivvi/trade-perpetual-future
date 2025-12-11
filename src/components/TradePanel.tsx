@@ -27,6 +27,8 @@ function TradePanel({ driftClient, user, isInitializing, status: appStatus, mark
   useEffect(() => {
     if (driftClient && markets.length > 0) {
       const market = markets[selectedMarket];
+      if (!market?.amm) return;
+      
       const oracleData = driftClient.getMMOracleDataForPerpMarket(market.marketIndex);
       const [bid, ask] = calculateBidAskPrice(market.amm, oracleData);
       
