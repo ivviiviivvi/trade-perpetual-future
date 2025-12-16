@@ -56,6 +56,7 @@ Bang Perp Exchange has been upgraded to a comprehensive professional trading pla
 - **[🚀 FEATURES.md](./docs/guides/FEATURES.md)** - Complete feature documentation
 - **[🏗️ ARCHITECTURE.md](./docs/guides/ARCHITECTURE.md)** - Technical architecture
 - **[🚢 DEPLOYMENT_GUIDE.md](./docs/guides/DEPLOYMENT_GUIDE.md)** - Deployment instructions
+- **[🗺️ STRUCTURE.md](./docs/guides/STRUCTURE.md)** - Repo map / keys to the folders
 
 ### Upcoming Features 🚧
 - TradingView chart integration
@@ -297,6 +298,7 @@ Before deploying to mainnet:
 - [ARCHITECTURE.md](./docs/guides/ARCHITECTURE.md) - Technical architecture details
 - [QUICKSTART.md](./docs/guides/QUICKSTART.md) - 5-minute getting started guide
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - How to contribute
+- [STRUCTURE.md](./docs/guides/STRUCTURE.md) - Folder map and keys
 
 ### External Documentation
 - [spark/4444JPP/perpetual-future](https://github.com/spark/4444JPP/perpetual-future) - Reference implementation (target state)
