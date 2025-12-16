@@ -117,7 +117,7 @@ function App() {
         <TradePanel driftClient={driftClient} user={user} isInitializing={isInitializing} status={status} markets={markets} />
 
         {/* Position Panel */}
-        <PositionPanel user={user} driftClient={driftClient} markets={markets} />
+        <PositionPanel user={user} driftClient={driftClient} />
 
         {/* Footer */}
         <footer className="footer footer-center p-10 text-base-content mt-16">
