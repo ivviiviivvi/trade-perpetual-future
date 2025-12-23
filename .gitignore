@@ -27,3 +27,17 @@ dist-ssr
 .env
 .env.local
 .env.production
+
+# Video production outputs (tracked via video_output/.gitignore)
+video_output/*.mp4
+video_output/*.webm
+video_output/audio/
+video_output/visuals/
+video_output/logs/*_log.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python

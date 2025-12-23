@@ -1,0 +1,38 @@
+# Video Production Output Directory
+# Contains generated videos, audio, visuals, and logs
+
+# Final videos
+*.mp4
+*.webm
+*.avi
+*.mov
+
+# Audio files
+audio/
+*.wav
+*.mp3
+*.ogg
+
+# Visual assets
+visuals/
+*.png
+*.jpg
+*.jpeg
+
+# Temporary files
+*.tmp
+*.part*
+*.concat.txt
+
+# Logs (keep summary, ignore details)
+logs/*_log.txt
+!logs/production_summary.txt
+!logs/production_summary.json
+
+# Playwright artifacts
+.playwright/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
