@@ -249,14 +249,14 @@ class VisualGenerator:
                 try:
                     font_heading = ImageFont.truetype(path, 60)
                     break
-                except:
+                except (OSError, IOError):
                     continue
             
             for path in font_paths_text:
                 try:
                     font_text = ImageFont.truetype(path, 32)
                     break
-                except:
+                except (OSError, IOError):
                     continue
             
             # Fallback to default if no fonts found
@@ -335,7 +335,7 @@ class VisualGenerator:
                 try:
                     font = ImageFont.truetype(path, 72)
                     break
-                except:
+                except (OSError, IOError):
                     continue
             
             if not font:

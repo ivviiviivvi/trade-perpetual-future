@@ -185,8 +185,8 @@ class ScriptParser:
         Extract narration text, removing visual cues and markdown.
         Preserves quoted speech indicated by > markers.
         """
-        # Remove visual cues
-        text = re.sub(r'\[(?:ON SCREEN|VISUAL|SHOT \d+):[^\]]+\]', '', text, flags=re.IGNORECASE)
+        # Remove visual cues (using same flexible pattern as _extract_visual_cues)
+        text = re.sub(r'\[(?:ON SCREEN|VISUAL|SHOT\s+[A-Za-z0-9]+):[^\]]+\]', '', text, flags=re.IGNORECASE)
         
         # Extract quoted narration (lines starting with >)
         lines = text.split('\n')

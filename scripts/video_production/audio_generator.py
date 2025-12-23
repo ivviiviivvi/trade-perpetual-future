@@ -303,5 +303,5 @@ class AudioGenerator:
                 timeout=5
             )
             return result.returncode == 0
-        except:
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
             return False

@@ -337,10 +337,15 @@ class VideoAssembler:
             try:
                 Path(video_list[0]).rename(output_path)
                 return True
-            except:
-                import shutil
-                shutil.copy2(video_list[0], output_path)
-                return True
+            except (OSError, PermissionError) as e:
+                logger.warning(f"Could not rename {video_list[0]}: {e}, trying copy instead")
+                try:
+                    import shutil
+                    shutil.copy2(video_list[0], output_path)
+                    return True
+                except Exception as copy_err:
+                    logger.error(f"Failed to copy video: {copy_err}")
+                    return False
         
         try:
             # Create concat file
@@ -418,5 +423,5 @@ class VideoAssembler:
                 timeout=5
             )
             return result.returncode == 0
-        except:
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
             return False
