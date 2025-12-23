@@ -31,7 +31,6 @@ export VIDEO_OUT_DIR="${VIDEO_OUT_DIR:-${REPO_ROOT}/video_output}"
 export VOICE_MODE="${VOICE_MODE:-local_tts}"
 export VIDEO_RESOLUTION="${VIDEO_RESOLUTION:-1920x1080}"
 export FPS="${FPS:-30}"
-export LLM_MODE="${LLM_MODE:-local_llm}"
 export HEADLESS="${HEADLESS:-true}"
 
 echo -e "${GREEN}Configuration:${NC}"

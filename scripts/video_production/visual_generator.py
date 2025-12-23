@@ -228,12 +228,41 @@ class VisualGenerator:
             img = Image.new('RGB', (self.width, self.height), color='#1f2937')
             draw = ImageDraw.Draw(img)
             
-            # Try to load a font
-            try:
-                font_heading = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
-                font_text = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 32)
-            except:
+            # Try to load a font with fallbacks for different systems
+            font_paths_heading = [
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",  # Linux (Debian/Ubuntu)
+                "/System/Library/Fonts/Helvetica.ttc",  # macOS
+                "C:\\Windows\\Fonts\\arialbd.ttf",  # Windows
+                "/usr/share/fonts/liberation/LiberationSans-Bold.ttf",  # RHEL/CentOS
+            ]
+            font_paths_text = [
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                "/System/Library/Fonts/Helvetica.ttc",
+                "C:\\Windows\\Fonts\\arial.ttf",
+                "/usr/share/fonts/liberation/LiberationSans-Regular.ttf",
+            ]
+            
+            font_heading = None
+            font_text = None
+            
+            for path in font_paths_heading:
+                try:
+                    font_heading = ImageFont.truetype(path, 60)
+                    break
+                except:
+                    continue
+            
+            for path in font_paths_text:
+                try:
+                    font_text = ImageFont.truetype(path, 32)
+                    break
+                except:
+                    continue
+            
+            # Fallback to default if no fonts found
+            if not font_heading:
                 font_heading = ImageFont.load_default()
+            if not font_text:
                 font_text = ImageFont.load_default()
             
             # Draw heading
@@ -293,10 +322,23 @@ class VisualGenerator:
             img = Image.new('RGB', (self.width, self.height), color='#1f2937')
             draw = ImageDraw.Draw(img)
             
-            # Load font
-            try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
-            except:
+            # Load font with fallbacks for different systems
+            font_paths = [
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",  # Linux (Debian/Ubuntu)
+                "/System/Library/Fonts/Helvetica.ttc",  # macOS
+                "C:\\Windows\\Fonts\\arialbd.ttf",  # Windows
+                "/usr/share/fonts/liberation/LiberationSans-Bold.ttf",  # RHEL/CentOS
+            ]
+            
+            font = None
+            for path in font_paths:
+                try:
+                    font = ImageFont.truetype(path, 72)
+                    break
+                except:
+                    continue
+            
+            if not font:
                 font = ImageFont.load_default()
             
             # Draw centered text

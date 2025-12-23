@@ -174,8 +174,9 @@ class ScriptParser:
         return scenes
     
     def _extract_visual_cues(self, text: str) -> List[str]:
-        """Extract visual cues like [ON SCREEN:], [VISUAL:], etc."""
-        visual_pattern = r'\[(?:ON SCREEN|VISUAL|SHOT \d+):\s*([^\]]+)\]'
+        """Extract visual cues like [ON SCREEN:], [VISUAL:], [SHOT X:], etc."""
+        # More flexible pattern to handle various shot numbering styles
+        visual_pattern = r'\[(?:ON SCREEN|VISUAL|SHOT\s+[A-Za-z0-9]+):\s*([^\]]+)\]'
         matches = re.findall(visual_pattern, text, re.IGNORECASE)
         return [m.strip() for m in matches]
     

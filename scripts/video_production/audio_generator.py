@@ -193,13 +193,19 @@ class AudioGenerator:
     def _generate_with_festival(self, text: str, output_path: str) -> bool:
         """Generate audio using festival."""
         try:
+            # Write text to temporary file to avoid injection issues
             temp_text = Path(output_path).with_suffix('.txt')
             with open(temp_text, 'w', encoding='utf-8') as f:
                 f.write(text)
             
-            cmd = f'(utt.save.wave (utt.synth (Utterance Text "{text}")) "{output_path}" "riff")'
+            # Use file input instead of inline text to avoid injection
+            cmd = [
+                "festival",
+                "--batch",
+                f'(utt.save.wave (utt.synth (Utterance Text (load "{temp_text}" t))) "{output_path}" "riff")'
+            ]
             result = subprocess.run(
-                ["festival", "--batch", cmd],
+                cmd,
                 capture_output=True,
                 text=True,
                 timeout=60

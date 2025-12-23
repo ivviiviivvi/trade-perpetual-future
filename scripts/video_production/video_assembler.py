@@ -347,9 +347,12 @@ class VideoAssembler:
             concat_file = Path(output_path).with_suffix('.concat.txt')
             with open(concat_file, 'w') as f:
                 for video_file in video_list:
-                    # Escape single quotes in path
-                    safe_path = str(Path(video_file).absolute()).replace("'", "\\'")
-                    f.write(f"file '{safe_path}'\n")
+                    # Use absolute paths to avoid shell metacharacter issues
+                    abs_path = str(Path(video_file).absolute())
+                    # Escape for FFmpeg's concat demuxer (not shell)
+                    # FFmpeg concat requires escaping: ', \, and newlines
+                    escaped_path = abs_path.replace("'", r"\'").replace("\\", r"\\")
+                    f.write(f"file '{escaped_path}'\n")
             
             cmd = [
                 "ffmpeg", "-y",
