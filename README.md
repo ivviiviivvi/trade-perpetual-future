@@ -511,7 +511,7 @@ Completed: Market/Limit/Stop orders, real-time oracle prices, position managemen
 ## Related Work
 
 - [Drift Protocol](https://drift.trade) — The on-chain perpetual futures exchange this platform integrates with
-- [Drift SDK](https://www.npmjs.com/package/@drift-labs/sdk) — TypeScript SDK for Drift Protocol interaction
+- [Drift SDK](https://github.com/drift-labs/protocol-v2) — TypeScript SDK for Drift Protocol interaction
 - [Solana Wallet Adapter](https://github.com/solana-labs/wallet-adapter) — Framework for Solana wallet integration in React
 - [Drift Builder Code Documentation](https://docs.drift.trade/partnerships/DBC) — Revenue model documentation
 
