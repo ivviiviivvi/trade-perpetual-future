@@ -1,26 +1,21 @@
-version: 1
-project:
-  name: trade-perpetual-future
-  description: Auto-generated seed. Waiting for human intent.
-  owners:
-  - handle: labores-profani-crux
-    role: steward
-  repo:
-    org: labores-profani-crux
-    type: node
-    role: commercial/product
-architecture:
-  tech_stack:
-  - node
-  - typescript
-automation_contract:
-  ai_access:
-    read_paths:
-    - '**/*'
-    write_paths:
-    - src/**
-    - docs/**
-    - tests/**
-    disallowed_writes:
-    - .github/workflows/**
-    - seed.yaml
+# seed.yaml — Automation Contract for ?/?
+# Schema: seed/v1.0
+# Updated: AUTONOMY Sprint Phase E (orphan resolution)
+
+schema_version: "1.0"
+organ: ?
+organ_name: ?
+repo: ?
+org: ?
+
+metadata:
+
+produces:
+  - type: product-artifact
+    description: "Deployed product, SaaS service, or commercial tool"
+    consumers: [ORGAN-IV]
+
+consumes:
+  - type: governance-rules
+    source: ORGAN-IV
+    description: Commerce operations follow governance policies
