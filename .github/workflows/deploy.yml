@@ -26,7 +26,6 @@ jobs:
   build-and-deploy-pages:
     needs: test
     runs-on: ubuntu-latest
-    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -45,7 +44,10 @@ jobs:
           VITE_API_BASE: ${{ vars.VITE_API_BASE }}
 
       - name: Deploy to Cloudflare Pages
+        if: ${{ env.HAS_CF_TOKEN == 'true' }}
         uses: cloudflare/wrangler-action@v3
+        env:
+          HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -54,7 +56,6 @@ jobs:
   deploy-worker:
     needs: test
     runs-on: ubuntu-latest
-    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     defaults:
       run:
         working-directory: workers/api
@@ -68,7 +69,10 @@ jobs:
       - run: npm install
 
       - name: Deploy Worker
+        if: ${{ env.HAS_CF_TOKEN == 'true' }}
         uses: cloudflare/wrangler-action@v3
+        env:
+          HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
