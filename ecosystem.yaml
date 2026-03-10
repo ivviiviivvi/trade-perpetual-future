@@ -1,0 +1,11 @@
+schema_version: '1.0'
+repo: trade-perpetual-future
+organ: III
+display_name: Perpetual futures trading system
+delivery:
+- platform: web_app
+  status: not_started
+revenue:
+- platform: subscription
+  status: planned
+  priority: critical
